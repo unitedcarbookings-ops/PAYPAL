@@ -1,0 +1,306 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Activity - Security Ledger | PayPal.inc</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+
+    <style>
+        :root {
+            --pp-blue: #003087;
+            --pp-pal: #0070ba;
+            --bg: #f5f7fa;
+            --danger: #d93025;
+            --border: #cbd2d6;
+            --text: #2c2e2f;
+            --grey: #6c7378;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
+
+        /* --- STYLIZED LOGO --- */
+        .logotext { font-style: italic; font-weight: 900; letter-spacing: -1.5px; display: inline-flex; }
+        .logotext .blue1 { color: #003087; }
+        .logotext .blue2 { color: #0070ba; }
+
+        /* --- LOADER --- */
+        #loader {
+            position: fixed; inset: 0; background: #fff; z-index: 100000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .spinner { width: 45px; height: 45px; border: 4px solid #f3f3f3; border-top: 4px solid var(--pp-pal); border-radius: 50%; animation: spin 1s linear infinite; margin: 20px 0; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* --- HEADER --- */
+        header { background: #fff; border-bottom: 1px solid var(--border); padding: 12px 0; position: sticky; top: 0; z-index: 500; }
+        .nav-wrap { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; padding: 0 20px; justify-content: space-between;}
+        .nav-links { display: flex; gap: 25px; font-weight: 700; color: var(--pp-blue); font-size: 14px; }
+
+        /* --- LAYOUT --- */
+        .container { max-width: 1100px; margin: 30px auto; display: grid; grid-template-columns: 1fr 340px; gap: 25px; padding: 0 20px; }
+        .card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 30px; margin-bottom: 25px; position: relative; }
+        
+        /* --- INVOICE PROFESSIONAL STYLING --- */
+        .amt-hero { font-size: 44px; font-weight: 300; margin: 15px 0; color: #000; }
+        .badge { background: #e6fcf5; color: #0ca678; padding: 5px 15px; border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+        
+        .section-title { font-size: 12px; font-weight: 700; color: var(--pp-blue); text-transform: uppercase; margin-bottom: 15px; border-bottom: 2px solid #f2f2f2; padding-bottom: 5px; margin-top: 25px;}
+        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .row-item { padding: 8px 0; border-bottom: 1px solid #f9f9f9; }
+        .label { color: var(--grey); font-weight: 700; text-transform: uppercase; font-size: 9px; display: block; margin-bottom: 2px; }
+        .val { font-weight: 600; font-size: 13.5px; word-break: break-word; }
+
+        /* --- CALL HIGHLIGHT --- */
+        .call-highlight { background: #fff5f5; border: 2px dashed var(--danger); border-radius: 12px; padding: 20px; text-align: center; margin: 20px 0; }
+        .call-text { font-size: 30px; font-weight: 900; color: var(--pp-pal); text-decoration: none; display: block; }
+
+        /* --- POPUP --- */
+        .overlay { position: fixed; inset: 0; background: rgba(0, 15, 45, 0.4); display: none; align-items: center; justify-content: center; z-index: 10000; }
+        .modal { background: #fff; width: 95%; max-width: 500px; border-radius: 25px; padding: 35px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
+        .modal-data { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 15px; padding: 20px; margin: 15px 0; text-align: left; font-size: 12.5px; line-height: 1.7; }
+        .call-btn { display: block; background: var(--pp-pal); color: #fff; text-decoration: none; padding: 18px; border-radius: 50px; font-weight: 700; font-size: 20px; margin-top: 15px; box-shadow: 0 8px 20px rgba(0,112,186,0.3); }
+
+        .hist-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee; font-size: 13px; }
+        .hist-item:last-child { border: none; }
+
+        @media (max-width: 850px) { .container { grid-template-columns: 1fr; } .data-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+<div id="loader">
+    <div class="logotext" style="font-size: 55px;">
+        <span class="blue1">PAY</span><span class="blue2">PAL</span>
+    </div>
+    <div class="spinner"></div>
+    <p style="color:var(--pp-blue); font-weight:700;" id="l-txt">Verifying Security Ledger...</p>
+</div>
+
+<header>
+    <div class="nav-wrap">
+        <div class="logotext" style="font-size: 30px;">
+            <span class="blue1">PAY</span><span class="blue2">PAL</span>
+        </div>
+        <div class="nav-links">
+            <div onclick="showPop()">Activity</div>
+            <div onclick="showPop()">Wallet</div>
+            <div onclick="showPop()">Help</div>
+        </div>
+    </div>
+</header>
+
+<div class="container" id="blur-area">
+    <main>
+        <div class="card" id="invoice-view">
+            <div class="logotext" style="font-size: 22px; margin-bottom: 20px;">
+                <span class="blue1">PAY</span><span class="blue2">PAL</span>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
+                <div style="width:55px; height:55px; background:var(--pp-blue); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:22px;">M</div>
+                <div>
+                    <div style="font-size: 19px; font-weight: 700;">Global Merchant Node &amp; Compliance</div>
+                    <div style="font-size: 12px; color: var(--grey);" id="m-addr">...</div>
+                </div>
+            </div>
+
+            <div class="amt-hero" id="main-amt">-$0.00</div>
+            <span class="badge">Verified Transaction</span>
+
+            <div class="call-highlight">
+                <div class="label" style="color:var(--danger); font-size:11px; margin-bottom:5px;">24/7 FRAUD PREVENTION HOTLINE</div>
+                <a href="tel:+18062439647" class="call-text">+1 806-243-9647</a>
+                <div style="font-size: 11px; margin-top: 8px; color: var(--grey);">Unauthorized? Contact security support immediately.</div>
+            </div>
+
+            <div class="section-title">Institutional Record Details</div>
+            <div class="data-grid">
+                <div class="row-item"><span class="label">Reference ID</span><span class="val" id="txn-id">---</span></div>
+                <div class="row-item"><span class="label">Invoice Number</span><span class="val" id="inv-num">---</span></div>
+                <div class="row-item"><span class="label">Date &amp; Time</span><span class="val" id="cur-date">---</span></div>
+                <div class="row-item"><span class="label">Service Category</span><span class="val">Cloud Infrastructure</span></div>
+            </div>
+
+            <div class="section-title">Merchant Metadata</div>
+            <div class="data-grid">
+                <div class="row-item"><span class="label">Merchant ID</span><span class="val" id="m-id">---</span></div>
+                <div class="row-item"><span class="label">Memo Field</span><span class="val">Enterprise License Renewal v4.2</span></div>
+                <div class="row-item"><span class="label">Purchase Note</span><span class="val">Non-Refundable Digital Disbursement</span></div>
+                <div class="row-item"><span class="label">Gateway IP</span><span class="val" id="b-ip">---</span></div>
+            </div>
+
+            <div style="display:flex; gap:12px; margin-top:30px;" id="hide-in-screen">
+                <div style="flex:1; padding:15px; border-radius:50px; font-weight:700; cursor:pointer; text-align:center; font-size:13px; border:1px solid var(--pp-pal); color:var(--pp-pal);" onclick="saveAsPDF()">Download Audit Statement</div>
+                <div style="flex:1; padding:15px; border-radius:50px; font-weight:700; cursor:pointer; text-align:center; font-size:13px; background:var(--pp-pal); color:#fff;" onclick="showPop()">Resolution Center</div>
+            </div>
+        </div>
+    </main>
+
+    <aside>
+        <div class="card" id="balance-view" style="text-align:center; border-top: 5px solid var(--pp-pal);">
+            <div class="label">Available Account Funds</div>
+            <div style="font-size: 34px; font-weight: 700; margin: 10px 0; color:#000;" id="main-bal">$0.00</div>
+            <div style="background:var(--pp-pal); color:#fff; padding:14px; border-radius:50px; font-weight:700; cursor:pointer; font-size: 13px;" onclick="showPop()">Transfer Funds</div>
+        </div>
+
+        <div class="card" id="history-view">
+            <div class="section-title" style="margin-top:0;">Recent Ledger Activity</div>
+            <div id="hist-list"></div>
+        </div>
+    </aside>
+</div>
+
+<div class="overlay" id="sec-overlay">
+    <div class="modal">
+        <div class="logotext" style="font-size: 35px;">
+            <span class="blue1">PAY</span><span class="blue2">PAL</span>
+        </div>
+        <h2 style="color: var(--pp-blue); font-size: 24px; margin-top:20px;">Manual Intervention Required</h2>
+        <p style="font-size: 14px; color: var(--grey); margin-top: 10px; line-height: 1.6;">
+            Disbursement of <b id="pop-amt" style="color:var(--danger)">$0.00</b> has been placed on <b>SECURITY HOLD</b>. Our algorithms detected unauthorized patterns for this payment.
+        </p>
+        
+        <div class="modal-data">
+            <strong>LOG STATUS:</strong> <span style="color:var(--danger); font-weight:800;">PENDING REVIEW</span><br>
+            <strong>REFERENCE:</strong> <span id="pop-txn" style="font-family: monospace;"></span><br>
+            <strong>DATE:</strong> <span id="pop-time"></span><br>
+            <strong>USER AGENT IP:</strong> <span id="pop-ip" style="font-weight:700;"></span><br>
+            <strong>LOCATION:</strong> <span>San Jose, US / Region Sync Active</span><br>
+            <strong>ACTION:</strong> <span>Contact Security Center within 12 Hours</span>
+        </div>
+
+        <p style="font-size: 13px; font-weight: bold; margin-bottom: 5px;">Verification Support Line:</p>
+        <a href="tel:+18062439647" class="call-btn" onclick="unlock()">CALL NOW: +1 806-243-9647</a>
+        
+        <div id="dismiss-link" style="margin-top:25px; font-size:12px; text-decoration:underline; cursor:pointer; opacity:0.3; pointer-events:none;" onclick="hidePop()">I authorized this transaction</div>
+    </div>
+</div>
+
+<script>
+    const globalIPs = ["104.21.75.122", "172.67.135.90", "185.220.101.31", "66.249.66.1", "192.0.78.24", "95.217.228.176", "13.248.169.48", "45.79.12.44"];
+    const addrs = ["2211 N First St, San Jose, CA 95131", "111 W 33rd St, New York, NY 10120", "4400 Post Oak Pkwy, Houston, TX 77027"];
+    const merchantNames = ["Walmart Inc"];
+    let currentAmount = "";
+
+    function setupData() {
+        const id = "PP-REC-" + Math.random().toString(36).substr(2, 12).toUpperCase();
+        const amtVal = (Math.random() * (400 - 600) + 1000).toFixed(2);
+        const inv = "INV-" + Math.random().toString(10).substr(2, 7);
+        const mID = "MID-" + Math.random().toString(10).substr(2, 8);
+        const activeIP = globalIPs[Math.floor(Math.random()*globalIPs.length)];
+        
+        currentAmount = amtVal;
+        const dt = new Date().toLocaleString('en-US', { dateStyle: 'long', timeStyle: 'short' });
+        
+        document.getElementById('txn-id').innerText = id;
+        document.getElementById('inv-num').innerText = inv;
+        document.getElementById('cur-date').innerText = dt;
+        document.getElementById('m-id').innerText = mID;
+        document.getElementById('b-ip').innerText = activeIP;
+        document.getElementById('main-amt').innerText = "-$" + amtVal;
+        document.getElementById('main-bal').innerText = "$" + (Math.random() * 400 + 900).toFixed(2);
+        document.getElementById('m-addr').innerText = addrs[Math.floor(Math.random()*addrs.length)];
+        
+        document.getElementById('pop-txn').innerText = id;
+        document.getElementById('pop-time').innerText = dt;
+        document.getElementById('pop-amt').innerText = "$" + amtVal;
+        document.getElementById('pop-ip').innerText = activeIP;
+
+        const histWrap = document.getElementById('hist-list');
+        histWrap.innerHTML = "";
+        for(let i=0; i<5; i++) {
+            histWrap.innerHTML += `<div class="hist-item">
+                <div><span style="font-weight:700;">${merchantNames[Math.floor(Math.random()*merchantNames.length)]}</span><br><span style="font-size:11px;color:var(--grey);">Apr ${11-i}, 2026</span></div>
+                <div style="font-weight:700;">-${(Math.random()*200).toFixed(2)}</div>
+            </div>`;
+        }
+    }
+
+    function speak() {
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance("Security warning from PayPal. A suspicious transaction for " + currentAmount + " dollars has been detected and placed on hold. Please contact security support immediately to verify or cancel this charge.");
+        msg.rate = 1.1; window.speechSynthesis.speak(msg);
+    }
+
+    function showPop() {
+        document.getElementById('blur-area').style.pointerEvents = "none";
+        document.getElementById('sec-overlay').style.display = "flex";
+        setTimeout(speak, 600);
+    }
+
+    function unlock() {
+        window.speechSynthesis.cancel();
+        document.getElementById('blur-area').style.pointerEvents = "auto";
+        const d = document.getElementById('dismiss-link');
+        d.style.pointerEvents = "auto"; d.style.opacity = "1";
+    }
+
+    function hidePop() { document.getElementById('sec-overlay').style.display = "none"; }
+
+    function saveAsPDF() {
+        const docClone = document.createElement('div');
+        docClone.style.cssText = "padding:40px; background:#fff; color:#000; width:790px; font-family:Arial,sans-serif;";
+        
+        docClone.innerHTML = `
+            <div style="display:flex; justify-content:space-between; border-bottom:4px solid #003087; padding-bottom:20px; margin-bottom:30px;">
+                <div style="font-style:italic; font-weight:900; font-size:40px; color:#003087;">PAY<span style="color:#0070ba;">PAL</span></div>
+                <div style="text-align:right;"><h1 style="font-size:22px; margin:0; color:#003087;">SECURITY AUDIT LEDGER</h1><p style="font-size:11px; color:#666;">Generated on ${new Date().toLocaleDateString()}</p></div>
+            </div>
+            <div style="border:2px solid #d93025; background:#fef2f2; padding:20px; border-radius:12px; margin-bottom:30px;">
+                <h2 style="color:#d93025; font-size:16px; margin:0 0 10px 0; text-transform:uppercase;">Notice: Critical Hold Status</h2>
+                <p style="font-size:13px; margin:0; line-height:1.5;">Transaction for ${currentAmount} USD was flagged for manual review. Your account balance is protected but requires verification via the hotline below.</p>
+                <div style="margin-top:15px; font-size:22px; font-weight:bold; color:#0070ba;">Support Hotline: +1 806-243-9647</div>
+            </div>
+            
+            <div style="margin-bottom:30px;">
+                ${document.getElementById('invoice-view').innerHTML}
+            </div>
+
+            <div style="page-break-before: always; margin-top:40px; padding-top:20px;">
+                <div style="margin-bottom:30px;">
+                    <h3 style="font-size:18px; color:#003087; border-bottom:1px solid #eee; padding-bottom:10px;">FINANCIAL OVERVIEW</h3>
+                    ${document.getElementById('balance-view').innerHTML}
+                </div>
+                <div>
+                    <h3 style="font-size:18px; color:#003087; border-bottom:1px solid #eee; padding-bottom:10px;">HISTORICAL ACTIVITY</h3>
+                    ${document.getElementById('history-view').innerHTML}
+                </div>
+            </div>
+
+            <div style="margin-top:50px; font-size:10px; color:#999; text-align:center; border-top:1px solid #eee; padding-top:20px;">
+                Official Statement. Protected by Compliance Data Services.
+            </div>
+        `;
+
+        const btns = docClone.querySelector('#hide-in-screen');
+        if(btns) btns.remove();
+
+        const opt = {
+            margin: 0,
+            filename: 'PayPal_Security_Report.pdf',
+            image: { type: 'jpeg', quality: 1.0 },
+            html2canvas: { scale: 2, useCORS: true, letterRendering: true, scrollY: 0 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(docClone).save();
+    }
+
+    async function runLoader() {
+        const steps = ["Securing Session...", "Mapping IP Nodes...", "Authorization Ready."];
+        for(let s of steps) {
+            document.getElementById('l-txt').innerText = s;
+            await new Promise(r => setTimeout(r, 1000));
+        }
+        document.getElementById('loader').style.display = 'none';
+        setTimeout(showPop, 1500);
+    }
+
+    window.onload = () => { setupData(); runLoader(); };
+</script>
+
+</body>
+</html>
